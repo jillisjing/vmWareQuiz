@@ -2,9 +2,9 @@
 
 ## Requirements
 * JAVA 8
-* BD: POSTGRES
-* Gradle
-* Git
+* DB: PostgreSQL 9.6.3
+* Gradle 4.7
+* Git 2.19.1
 
 ## Collections relate package:
 * quizSolution/src/main/java/vmware/Quiz/Solution/collection
