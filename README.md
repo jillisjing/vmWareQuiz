@@ -19,7 +19,8 @@
 * Unit test: DrawShapeProxyTest
 
 ## DB Project
-* create DB (CREATED DATABASE vmware_interview)before start up.
+* Create DB (CREATE DATABASE vmware_interview)before start up.
+* Correct DB config(url, username, password) in /vmWareQuiz/quizSolution/src/main/resources/application.properties. 
 
 * Startup class - /quizSolution/src/main/java/vmware/Quiz/Solution QuizSolutionApplication.java
 
