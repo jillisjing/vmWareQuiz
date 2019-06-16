@@ -12,11 +12,11 @@
 
 ## Concurrency relate package:
 * quizSolution/src/main/java/vmware/Quiz/Solution/concurrency
-* Unit test:SafeReadAndWriteWithLockTest.java
+* Unit test: SafeReadAndWriteWithLockTest.java
 
 ## OO Design relate package:
 * /quizSolution/src/main/java/vmware/Quiz/Solution/oo
-* Unit test: DrawShapeProxyTest
+* Unit test: DrawShapeProxyTest.java
 
 ## DB Project
 * Create DB (CREATE DATABASE vmware_interview)before start up.
@@ -24,4 +24,5 @@
 
 * Startup class - /quizSolution/src/main/java/vmware/Quiz/Solution QuizSolutionApplication.java
 
-* package:/quizSolution/src/main/java/vmware/Quiz/Solution/DBProject
+* Package: /quizSolution/src/main/java/vmware/Quiz/Solution/DBProject
+* Unit test package: vmware.Quiz.Solution.DBProject
