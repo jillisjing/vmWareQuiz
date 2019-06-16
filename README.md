@@ -2,9 +2,9 @@
 
 ## Requirements
 * JAVA 8
-* BD: POSTGRES
-* Gradle
-* Git
+* DB: PostgreSQL 9.6.3
+* Gradle 4.7
+* Git 2.19.1
 
 ## Collections relate package:
 * quizSolution/src/main/java/vmware/Quiz/Solution/collection
@@ -12,15 +12,17 @@
 
 ## Concurrency relate package:
 * quizSolution/src/main/java/vmware/Quiz/Solution/concurrency
-* Unit test:SafeReadAndWriteWithLockTest.java
+* Unit test: SafeReadAndWriteWithLockTest.java
 
 ## OO Design relate package:
 * /quizSolution/src/main/java/vmware/Quiz/Solution/oo
-* Unit test: DrawShapeProxyTest
+* Unit test: DrawShapeProxyTest.java
 
 ## DB Project
-* create DB (CREATED DATABASE vmware_interview), before start up.
+* Create DB (CREATE DATABASE vmware_interview)before start up.
+* Correct DB config(url, username, password) in /vmWareQuiz/quizSolution/src/main/resources/application.properties. 
 
 * Startup class - /quizSolution/src/main/java/vmware/Quiz/Solution QuizSolutionApplication.java
 
-* package:/quizSolution/src/main/java/vmware/Quiz/Solution/DBProject
+* Package: /quizSolution/src/main/java/vmware/Quiz/Solution/DBProject
+* Unit test package: vmware.Quiz.Solution.DBProject
