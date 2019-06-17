@@ -29,7 +29,7 @@ public class SafeReadAndWriteUtil<T>
   }
   
   /**
-   * write doc with lock, if documents full more than 2 seconds, will stop wait
+   * write doc with lock
    * 
    * @throws InterruptedException
    */
@@ -67,8 +67,7 @@ public class SafeReadAndWriteUtil<T>
   }
   
   /**
-   * read doc with lock, if documents empty more than 2 seconds, will stop wait
-   * @throws InterruptedException 
+   * read doc with lock.
    */
   public T read() throws InterruptedException
   {
