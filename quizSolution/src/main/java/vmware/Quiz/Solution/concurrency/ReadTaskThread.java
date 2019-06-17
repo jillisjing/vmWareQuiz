@@ -3,13 +3,13 @@ package vmware.Quiz.Solution.concurrency;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReadTaskTread extends Thread
+public class ReadTaskThread extends Thread
 {
-  private SafeReadAndWriteWithLock _readAndWrite;
+  private SafeReadAndWriteUtil<String> _readAndWrite;
   public static volatile int _readTimes = 10;
 
   public List<String> _resultList = new ArrayList<>();
-  public ReadTaskTread( SafeReadAndWriteWithLock readAndWrite )
+  public ReadTaskThread( SafeReadAndWriteUtil<String> readAndWrite )
   {
     this._readAndWrite = readAndWrite;
   }

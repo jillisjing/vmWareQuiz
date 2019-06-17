@@ -16,27 +16,28 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import vmware.Quiz.Solution.concurrency.ReadTaskCallable;
-import vmware.Quiz.Solution.concurrency.ReadTaskTread;
-import vmware.Quiz.Solution.concurrency.SafeReadAndWriteWithLock;
-import vmware.Quiz.Solution.concurrency.WriteTaskTread;
+import vmware.Quiz.Solution.concurrency.ReadTaskThread;
+import vmware.Quiz.Solution.concurrency.SafeReadAndWriteUtil;
+import vmware.Quiz.Solution.concurrency.WriteTaskThread;
 
-public class SafeReadAndWriteWithLockTest
+public class SafeReadAndWriteUtilTest
 {
-
+  
   @Test
   public void testTwoWriterAndRead() throws InterruptedException
   {
-    SafeReadAndWriteWithLock readAndWrite = new SafeReadAndWriteWithLock( 10 );
-    ReadTaskTread._readTimes = 10;
-    WriteTaskTread._writeTimes = 10;
-    ReadTaskTread read1 = new ReadTaskTread( readAndWrite );
+    SafeReadAndWriteUtil<String> readAndWrite = new SafeReadAndWriteUtil<>( 10 );
+    int docNum = 1000;
+    ReadTaskThread._readTimes = docNum;
+    WriteTaskThread._writeTimes = docNum;
+    ReadTaskThread read1 = new ReadTaskThread( readAndWrite );
     read1.start();
-    ReadTaskTread read2 = new ReadTaskTread( readAndWrite );
+    ReadTaskThread read2 = new ReadTaskThread( readAndWrite );
     read2.start();
     
-    WriteTaskTread write1 = new WriteTaskTread( readAndWrite );
+    WriteTaskThread write1 = new WriteTaskThread( readAndWrite );
     write1.start();
-    WriteTaskTread write2 = new WriteTaskTread( readAndWrite );
+    WriteTaskThread write2 = new WriteTaskThread( readAndWrite );
     write2.start();
 
     // wait all of sub-thread finished
@@ -56,9 +57,9 @@ public class SafeReadAndWriteWithLockTest
     int write2Size = write2._resultList.size();
     Set<String> writeResult = mergeListAndConvertToSet( write1._resultList, write1Size, write2._resultList,
                                                         write2Size );
-    Assert.assertEquals( 10, writeResult.size() );
+    Assert.assertEquals( docNum, writeResult.size() );
     Set<String> readResult = mergeListAndConvertToSet( read1._resultList, read1Size, read2._resultList, read2Size );
-    Assert.assertEquals( 10, readResult.size() );
+    Assert.assertEquals( docNum, readResult.size() );
 
     for ( String wr : writeResult )
     {
@@ -69,15 +70,15 @@ public class SafeReadAndWriteWithLockTest
   @Test
   public void testWriteMoreThanRead() throws InterruptedException
   {
-    SafeReadAndWriteWithLock readAndWrite = new SafeReadAndWriteWithLock( 10 );
-    ReadTaskTread._readTimes = 4;
-    WriteTaskTread._writeTimes = 10;
-    ReadTaskTread read1 = new ReadTaskTread( readAndWrite );
+    SafeReadAndWriteUtil<String> readAndWrite = new SafeReadAndWriteUtil<>( 10 );
+    ReadTaskThread._readTimes = 4;
+    WriteTaskThread._writeTimes = 10;
+    ReadTaskThread read1 = new ReadTaskThread( readAndWrite );
     read1.start();
 
-    WriteTaskTread write1 = new WriteTaskTread( readAndWrite );
+    WriteTaskThread write1 = new WriteTaskThread( readAndWrite );
     write1.start();
-    WriteTaskTread write2 = new WriteTaskTread( readAndWrite );
+    WriteTaskThread write2 = new WriteTaskThread( readAndWrite );
     write2.start();
     while ( read1.isAlive() )
     {
@@ -109,25 +110,27 @@ public class SafeReadAndWriteWithLockTest
   @Test
   public void testReadMoreThanWrite() throws InterruptedException
   {
-    SafeReadAndWriteWithLock readAndWrite = new SafeReadAndWriteWithLock( 10 );
-    ReadTaskTread._readTimes = 8;
-    WriteTaskTread._writeTimes = 3;
-    ExecutorService executor=Executors.newCachedThreadPool();
+    SafeReadAndWriteUtil<String> readAndWrite = new SafeReadAndWriteUtil<>( 10 );
+    ReadTaskThread._readTimes = 8;
+    WriteTaskThread._writeTimes = 3;
+    // only 3 docs can read, so avoid endless waiting read doc, 
+    // so read thread just waiting 5 seconds, if still no doc to read,read thread will interrupted.
+    ExecutorService executor = Executors.newCachedThreadPool();
     ReadTaskCallable read1 = new ReadTaskCallable( readAndWrite );
     Future<Boolean> f1 = executor.submit( read1 );
-    
-    WriteTaskTread write1 = new WriteTaskTread( readAndWrite );
+
+    WriteTaskThread write1 = new WriteTaskThread( readAndWrite );
     write1.start();
-    WriteTaskTread write2 = new WriteTaskTread( readAndWrite );
+    WriteTaskThread write2 = new WriteTaskThread( readAndWrite );
     write2.start();
-    
+
     while ( write1.isAlive() )
     {
     }
     while ( write2.isAlive() )
     {
     }
-    
+
     try
     {
       // only 3 documents for read, avoid endless wait, it will interrupted after 5 seconds

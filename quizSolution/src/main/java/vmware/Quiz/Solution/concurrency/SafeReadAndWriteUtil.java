@@ -1,14 +1,20 @@
 package vmware.Quiz.Solution.concurrency;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SafeReadAndWriteWithLock
+public class SafeReadAndWriteUtil<T>
 {
-  private final List<String> documents;
+  static class Node<T> {
+    T item;
+    Node<T> next;
+    Node(T x) { item = x; }
+}
+  transient Node<T> head;
+
+  private transient Node<T> last;
+  
   private final int _capacity;
   private final AtomicInteger count = new AtomicInteger();
   
@@ -17,9 +23,9 @@ public class SafeReadAndWriteWithLock
   private final ReentrantLock writeLock = new ReentrantLock();
   private Condition canWrite = writeLock.newCondition();
   
-  public SafeReadAndWriteWithLock(int capacity) {
+  public SafeReadAndWriteUtil(int capacity) {
     this._capacity = capacity;
-    this.documents = new ArrayList<>( _capacity );
+    last = head = new Node<>(null);
   }
   
   /**
@@ -27,9 +33,10 @@ public class SafeReadAndWriteWithLock
    * 
    * @throws InterruptedException
    */
-  public void write(String doc) throws InterruptedException {
+  public void write(T doc) throws InterruptedException {
     if ( doc == null ) throw new NullPointerException();
     int c = -1;
+    Node<T> node = new Node<>(doc);
     final ReentrantLock writelock = this.writeLock;
     final AtomicInteger count = this.count;
     writelock.lockInterruptibly();
@@ -39,10 +46,9 @@ public class SafeReadAndWriteWithLock
                             + ") want to write doc，but the queue is full." );
         canWrite.await();
       }
-      documents.add( doc );
+      last = last.next = node;
       c = count.getAndIncrement();
-      System.out.println( "Thread (" + Thread.currentThread().getName() + ") writed doc: " + doc + "; number of docs: "
-                          + documents.size() );
+      System.out.println( "Thread (" + Thread.currentThread().getName() + ") writed doc: " + doc + ";");
       if (c + 1 < _capacity) 
           canWrite.signal();
     } finally {
@@ -64,35 +70,46 @@ public class SafeReadAndWriteWithLock
    * read doc with lock, if documents empty more than 2 seconds, will stop wait
    * @throws InterruptedException 
    */
-  public String read() throws InterruptedException
+  public T read() throws InterruptedException
   {
-    String  doc = null;
+    T doc = null;
     int c = -1;
     final AtomicInteger count = this.count;
     final ReentrantLock readlock = this.readLock;
-    readlock.lock();
-    try {
-      while ( count.get() == 0 ) {
+    readlock.lockInterruptibly();
+    try
+    {
+      while ( count.get() == 0 )
+      {
         System.out.println( "warning：Thread(" + Thread.currentThread().getName()
                             + ") want to read doc，But there are no products" );
         canRead.await();
       }
-      doc = documents.remove( 0 );
+      Node<T> h = head;
+      Node<T> first = h.next;
+      h.next = h; // help GC
+      head = first;
+      doc = first.item;
+      first.item = null;
       c = count.getAndDecrement();
-      System.out.println( "Thread(" + Thread.currentThread().getName() + ") read a doc:" + doc + "; number of docs:"
-                          + documents.size() );
+      System.out.println( "Thread(" + Thread.currentThread().getName() + ") read a doc:" + doc + ";" );
       if ( c > 1 )
         canRead.signal();
     }
-    finally {
+    finally
+    {
       readlock.unlock();
     }
-    if ( c == _capacity ){
+    if ( c == _capacity )
+    {
       final ReentrantLock writeLock = this.writeLock;
       writeLock.lock();
-      try {
-          canWrite.signal();
-      } finally {
+      try
+      {
+        canWrite.signal();
+      }
+      finally
+      {
         writeLock.unlock();
       }
     }

@@ -6,11 +6,11 @@ import java.util.concurrent.Callable;
 
 public class ReadTaskCallable implements Callable<Boolean>
 {
-  private SafeReadAndWriteWithLock _readAndWrite;
+  private SafeReadAndWriteUtil<String> _readAndWrite;
   public static volatile int _readTimes = 10;
 
   public List<String> _resultList = new ArrayList<>();
-  public ReadTaskCallable( SafeReadAndWriteWithLock readAndWrite )
+  public ReadTaskCallable( SafeReadAndWriteUtil<String> readAndWrite )
   {
     this._readAndWrite = readAndWrite;
   }
@@ -26,7 +26,7 @@ public class ReadTaskCallable implements Callable<Boolean>
           _resultList.add( _result );
         }
         catch ( InterruptedException e1 ) {
-          System.err.println( "read a doc error: " + e1.getMessage() );
+          System.err.println( "interrupted read doc: " + e1.getMessage() );
           return false; 
         }
       }

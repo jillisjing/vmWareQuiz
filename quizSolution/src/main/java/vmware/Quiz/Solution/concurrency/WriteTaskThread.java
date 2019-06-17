@@ -3,13 +3,14 @@ package vmware.Quiz.Solution.concurrency;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WriteTaskTread extends Thread
+public class WriteTaskThread extends Thread
 {
-  private SafeReadAndWriteWithLock _readAndWrite;
+  private SafeReadAndWriteUtil<String> _readAndWrite;
+  // the times of thread write doc
   public static volatile int _writeTimes = 10;
   public List<String> _resultList = new ArrayList<>();
 
-  public WriteTaskTread(SafeReadAndWriteWithLock readAndWrite) {
+  public WriteTaskThread(SafeReadAndWriteUtil<String> readAndWrite) {
       this._readAndWrite = readAndWrite;
   }
 
@@ -18,7 +19,6 @@ public class WriteTaskTread extends Thread
     synchronized ( this ) {
       while ( _writeTimes > 0 ) {
         try {
-          
           String doc = "book " + Thread.currentThread().getName() + _writeTimes;
           _writeTimes--;
           _readAndWrite.write( doc );

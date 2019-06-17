@@ -2,7 +2,11 @@ package vmware.Quiz.Solution.collection;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+ * The Utils for merge two sorted collections. The object which in list for merge
+ * should extends {@link CompareBase}
+ * 
+ */
 public class MergeCollectionsUtil< T extends CompareBase<T> >
 {
   /**
