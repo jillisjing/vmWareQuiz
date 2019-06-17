@@ -6,11 +6,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SafeReadAndWriteUtil<T>
 {
-  static class Node<T> {
+  static class Node<T>
+  {
     T item;
     Node<T> next;
-    Node(T x) { item = x; }
-}
+
+    Node( T x )
+    {
+      item = x;
+    }
+  }
   transient Node<T> head;
 
   private transient Node<T> last;
